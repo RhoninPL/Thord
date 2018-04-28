@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/Thord/v15
+/packages
+/Thord.App/bin/Debug
+/Thord.App/obj/Debug
+/Thord.Console/bin/Debug
+/Thord.Console/obj/Debug
+/Thord.Core/bin/Debug
+/Thord.Core/obj/Debug
+/Thord.IsolatorCache.user
