@@ -28,7 +28,7 @@ namespace Thord.Core
         {
             ReadAllFiles(source);
             Console.Title = $"Files: {_copiedFilesNumber}/{_totalFilesToCopy}, _copiedFilesSize: {_copiedFilesSize}{_totalFilesSize}";
-            CopyAll(source, target, "");
+            CopyAll(source, target);
         }
 
         #endregion
@@ -65,21 +65,21 @@ namespace Thord.Core
             }
         }
 
-        private void CopyAll(DirectoryInfo source, DirectoryInfo target, string currentPath)
+        private void CopyAll(DirectoryInfo source, DirectoryInfo target)
         {
             Directory.CreateDirectory(target.FullName);
-            CompareFilesToCopy(source, target, currentPath);
+            CompareFilesToCopy(source, target);
 
-            CopySubdir(source, target, currentPath);
+            CopySubdir(source, target);
         }
 
-        private void CopySubdir(DirectoryInfo source, DirectoryInfo target, string currentPath)
+        private void CopySubdir(DirectoryInfo source, DirectoryInfo target)
         {
 
             try
             {
-                currentPath = string.Join(currentPath, "//", source.Name);
-                foreach (var sourceDirectory in source.GetDirectories())
+                var sourceDirecotries = source.GetDirectories();
+                foreach (var sourceDirectory in sourceDirecotries)
                 {
                     if (FoldersSkip != null)
                     {
@@ -91,7 +91,17 @@ namespace Thord.Core
                         continue;
 
                     var nextTargetSubDir = target.CreateSubdirectory(sourceDirectory.Name);
-                    CopyAll(sourceDirectory, nextTargetSubDir, currentPath);
+                    CopyAll(sourceDirectory, nextTargetSubDir);
+                }
+
+                foreach (var targetDirectory in target.GetDirectories())
+                {
+                    var sourceFile = sourceDirecotries.FirstOrDefault(sFile => sFile.Name == targetDirectory.Name);
+                    if (sourceFile != null)
+                        continue;
+
+                    Console.WriteLine($"Deleting folder {targetDirectory.Name}");
+                    targetDirectory.Delete(true);
                 }
             }
             catch
@@ -103,7 +113,7 @@ namespace Thord.Core
             }
         }
 
-        private void CompareFilesToCopy(DirectoryInfo source, DirectoryInfo target, string currentPath)
+        private void CompareFilesToCopy(DirectoryInfo source, DirectoryInfo target)
         {
             try
             {
