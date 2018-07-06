@@ -3,10 +3,11 @@ using System.Collections.Generic;
 
 namespace Thord.Core.Models
 {
-    public class Task
+    public class BackupTask
     {
         #region Properties
 
+        public RelayCommand test { get; set; }
         public string SourceDirectory { get; set; }
         public string TargetDirectory { get; set; }
         public bool ShowErrors { get; set; }

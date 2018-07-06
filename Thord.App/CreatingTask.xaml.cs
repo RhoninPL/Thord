@@ -1,54 +1,84 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using Ookii.Dialogs.Wpf;
+using Thord.App.ViewModels;
 
 namespace Thord.App
 {
     public partial class CreatingTask : Window
     {
-        public CreatingTask()
+        public CreatingTask(MainViewModel mainViewModel)
         {
             InitializeComponent();
-            FirstRun();
-            ChooseSourceFolderButton.Click += ChooseSourceFolder;
-            ChooseTargetFolderButton.Click += ChooseTargetFolder;
+
+            var drivers = Directory.GetLogicalDrives();
+
+            foreach (var driver in drivers)
+            {
+                var item = new TreeViewItem
+                {
+                    Header = driver,
+                    Tag = driver
+                };
+
+                item.Items.Add(null);
+                item.Expanded += ItemOnExpanded;
+
+                SourceFolderTree.Items.Add(item);
+            }
+
+            foreach (var driver in drivers)
+            {
+                var item = new TreeViewItem
+                {
+                    Header = driver,
+                    Tag = driver
+                };
+
+                item.Items.Add(null);
+                item.Expanded += ItemOnExpanded;
+
+                TargetFolderTree.Items.Add(item);
+            }
+
         }
 
-        private void ChooseSourceFolder(object sender, RoutedEventArgs routedEventArgs)
+        private void ItemOnExpanded(object sender, RoutedEventArgs routedEventArgs)
         {
-            var dialog = new VistaFolderBrowserDialog();
-            var selected = dialog.ShowDialog(Owner);
+            var item = (TreeViewItem)sender;
 
-            if (selected == false)
+            if (item.Items.Count != 1 || item.Items[0] != null)
                 return;
 
-            SourceDirectoryLabel.Content = dialog.SelectedPath;
-            Properties.Settings.Default.SourceDefaultPath = dialog.SelectedPath;
-            Properties.Settings.Default.Save();
+            item.Items.Clear();
+
+            var folders = Directory.GetDirectories((string)item.Tag);
+
+            foreach (var folder in folders)
+            {
+                try
+                {
+                    var subitem = new TreeViewItem
+                    {
+                        Header = Path.GetFileName(folder),
+                        Tag = folder
+                    };
+                    subitem.Items.Add(null);
+                    subitem.Expanded += ItemOnExpanded;
+
+                    item.Items.Add(subitem);
+                }
+                catch
+                {
+                }
+            }
         }
 
-        private void ChooseTargetFolder(object sender, RoutedEventArgs routedEventArgs)
+        private void AddTaskButton_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new VistaFolderBrowserDialog();
-            var selected = dialog.ShowDialog(Owner);
 
-            if (selected == false)
-                return;
-
-            TargetDirectoryLabel.Content = dialog.SelectedPath;
-            Properties.Settings.Default.TargetDefaultPath = dialog.SelectedPath;
-            Properties.Settings.Default.Save();
-        }
-
-        private void FirstRun()
-        {
-            if (Properties.Settings.Default.SourceDefaultPath == Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-                Properties.Settings.Default.SourceDefaultPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
-            if (Properties.Settings.Default.TargetDefaultPath == Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-                Properties.Settings.Default.TargetDefaultPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
-            Properties.Settings.Default.Save();
         }
     }
 }

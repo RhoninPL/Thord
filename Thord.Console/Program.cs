@@ -22,15 +22,14 @@ namespace Thord.Console
             var sourceFolder = new DirectoryInfo(sourceFolderName);
             var targetFolder = new DirectoryInfo(targetFolderName);
 
-            var copyHandler = new SynchronizeHandler()
+            var copyHandler = new SynchronizeHandler
             {
                 FoldersSkip = new List<string>() { folderToSkip }
             };
             copyHandler.StartCopy(sourceFolder, targetFolder);
-            //copyHandler.CopyAll(sourceFolder, targetFolder);
 
             System.Console.WriteLine("Synchronize done. Press enter to exit...");
-            System.Console.ReadKey();
+            System.Console.ReadLine();
         }
 
         #endregion

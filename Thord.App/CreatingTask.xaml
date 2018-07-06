@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Thord.App"
         mc:Ignorable="d"
-        Title="CreatingTask" Height="450" Width="800">
+        Title="Creating Backup BackupTask" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="25" />
@@ -14,32 +15,15 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <Button Name="ChooseSourceFolderButton" HorizontalAlignment="Right" Padding="5,1" Grid.Column="1">Chose source folder</Button>
-                <Label Name="SourceDirectoryLabel" Width="auto" Grid.Column="0"></Label>
-            </Grid>
-            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
-            <Grid Grid.Column="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <Button Name="ChooseTargetFolderButton" Grid.Column="1" HorizontalAlignment="Right" Padding="5,1">Choose target folder</Button>
-                <Label Name="TargetDirectoryLabel" Width="auto" Grid.Column="0"></Label>
-            </Grid>
+            <StackPanel Orientation="Horizontal">
+                <Button Name="AddTaskButton" Click="AddTaskButton_Click" HorizontalAlignment="Right" Padding="5,1" Grid.Column="1">Add task</Button>
+            </StackPanel>
         </Grid>
         <Grid Grid.Row="1">
+            <StackPanel Orientation="Horizontal">
             <CheckBox Content="Nadpisz stare"></CheckBox>
-            <CheckBox Content="Usuń brakujące"></CheckBox>
+                <CheckBox Content="Usuń brakujące"></CheckBox>
+            </StackPanel>
         </Grid>
         <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch" />
         <Grid Grid.Row="3">
@@ -48,21 +32,37 @@
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <ListView Name="SourceListView">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+            <TreeView Name="SourceFolderTree" Grid.Column="0">
+                <TreeView.Resources>
+                    <Style TargetType="{x:Type TreeViewItem}">
+                        <Setter Property="HeaderTemplate">
+                            <Setter.Value>
+                                <DataTemplate DataType="{x:Type TreeViewItem}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </TreeView.Resources>
+            </TreeView>
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
-            <ListView x:Name="TargetListView" Grid.Column="2">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+            <TreeView Name="TargetFolderTree" Grid.Column="2">
+                <TreeView.Resources>
+                    <Style TargetType="{x:Type TreeViewItem}">
+                        <Setter Property="HeaderTemplate">
+                            <Setter.Value>
+                                <DataTemplate DataType="{x:Type TreeViewItem}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </TreeView.Resources>
+            </TreeView>
         </Grid>
     </Grid>
 </Window>
