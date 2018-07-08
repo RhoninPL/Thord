@@ -7,22 +7,32 @@ namespace Thord.App.ViewModels
 {
     public class ViewModelBase : INotifyPropertyChanged
     {
-        internal void RaisePropertyChanged(string prop)
-        {
-            if (PropertyChanged != null) { PropertyChanged(this, new PropertyChangedEventArgs(prop)); }
-        }
-        public event PropertyChangedEventHandler PropertyChanged;
+        #region Fields
 
-        bool? _CloseWindowFlag;
+        bool? _closeWindowFlag;
+
+        #endregion
+
+        #region Properties
+
         public bool? CloseWindowFlag
         {
-            get { return _CloseWindowFlag; }
+            get
+            {
+                return _closeWindowFlag;
+            }
             set
             {
-                _CloseWindowFlag = value;
+                _closeWindowFlag = value;
                 RaisePropertyChanged("CloseWindowFlag");
             }
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+
+        #region Public Methods
 
         public virtual void CloseWindow(bool? result = true)
         {
@@ -33,5 +43,12 @@ namespace Thord.App.ViewModels
                     : !CloseWindowFlag;
             }));
         }
+
+        internal void RaisePropertyChanged(string prop)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
+
+        #endregion
     }
 }

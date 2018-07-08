@@ -7,8 +7,9 @@ namespace Thord.Core
     {
         #region Fields
 
-        readonly Action<object> _execute;
         readonly Predicate<object> _canExecute;
+
+        readonly Action<object> _execute;
 
         #endregion
 
@@ -27,6 +28,7 @@ namespace Thord.Core
             _execute = execute;
             _canExecute = canExecute;
         }
+
         #endregion
 
         #region Public Methods
@@ -36,15 +38,21 @@ namespace Thord.Core
             return _canExecute == null ? true : _canExecute(parameter);
         }
 
-        public event EventHandler CanExecuteChanged
-        {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
-        }
-
         public void Execute(object parameter)
         {
             _execute(parameter);
+        }
+
+        public event EventHandler CanExecuteChanged
+        {
+            add
+            {
+                CommandManager.RequerySuggested += value;
+            }
+            remove
+            {
+                CommandManager.RequerySuggested -= value;
+            }
         }
 
         #endregion

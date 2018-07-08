@@ -5,8 +5,15 @@ namespace Thord.Core.Models
 {
     public class BackupTasksBusinessObject
     {
-        private List<BackupTask> _backupTasks { get; set; }
+        #region Properties
+
+        private List<BackupTask> _backupTasks { get; }
+
         public event EventHandler BackupTaskChanged;
+
+        #endregion
+
+        #region Constructors
 
         public BackupTasksBusinessObject()
         {
@@ -17,6 +24,10 @@ namespace Thord.Core.Models
                 new BackupTask { SourceDirectory = "F:\\", TargetDirectory = "D:\\", OverwriteOldFiles = true }
             };
         }
+
+        #endregion
+
+        #region Public Methods
 
         public List<BackupTask> GetBackupTasks()
         {
@@ -37,12 +48,17 @@ namespace Thord.Core.Models
 
         public void UpdateBackupTask(BackupTask backupTask)
         {
-
         }
+
+        #endregion
+
+        #region  Private Methods
 
         private void OnBackupTaskChanged()
         {
             BackupTaskChanged?.Invoke(this, null);
         }
+
+        #endregion
     }
 }

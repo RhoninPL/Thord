@@ -10,9 +10,18 @@ namespace Thord.App.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        #region Properties
+        #region Fields
 
         private ObservableCollection<BackupTask> _backupTasks;
+        private readonly BackupTasksBusinessObject _backupTasksBusinessObject;
+        private object _selectedBackupTask;
+
+        BindingGroup _UpdateBindingGroup;
+
+        #endregion
+
+        #region Properties
+
         public ObservableCollection<BackupTask> BackupTasks
         {
             get
@@ -23,16 +32,21 @@ namespace Thord.App.ViewModels
         }
 
         public RelayCommand OpenAddTaskCommand { get; set; }
+
         public RelayCommand StartBackupCommand { get; set; }
+
         public RelayCommand AddBackupTaskCommand { get; set; }
+
         public RelayCommand SaveBackupTaskCommand { get; set; }
-        private BackupTasksBusinessObject _backupTasksBusinessObject;
+
         public int SelectedIndex { get; set; }
-        private object _selectedBackupTask;
 
         public object SelectedBackupTask
         {
-            get { return _selectedBackupTask; }
+            get
+            {
+                return _selectedBackupTask;
+            }
             set
             {
                 if (_selectedBackupTask != value)
@@ -43,7 +57,25 @@ namespace Thord.App.ViewModels
             }
         }
 
+        public BindingGroup UpdateBindingGroup
+        {
+            get
+            {
+                return _UpdateBindingGroup;
+            }
+            set
+            {
+                if (_UpdateBindingGroup != value)
+                {
+                    _UpdateBindingGroup = value;
+                    RaisePropertyChanged("UpdateBindingGroup");
+                }
+            }
+        }
+
         #endregion
+
+        #region Constructors
 
         #region Constructor
 
@@ -59,6 +91,8 @@ namespace Thord.App.ViewModels
             AddBackupTaskCommand = new RelayCommand(AddBackupTask);
             SaveBackupTaskCommand = new RelayCommand(SaveBackupTask);
         }
+
+        #endregion
 
         #endregion
 
@@ -106,29 +140,13 @@ namespace Thord.App.ViewModels
 
         #endregion
 
+        #region  Private Methods
+
         private void BackupTaskChanged(object sender, EventArgs e)
         {
-            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-            {
-                RaisePropertyChanged("BackupTasks");
-            }));
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => { RaisePropertyChanged("BackupTasks"); }));
         }
 
-        BindingGroup _UpdateBindingGroup;
-        public BindingGroup UpdateBindingGroup
-        {
-            get
-            {
-                return _UpdateBindingGroup;
-            }
-            set
-            {
-                if (_UpdateBindingGroup != value)
-                {
-                    _UpdateBindingGroup = value;
-                    RaisePropertyChanged("UpdateBindingGroup");
-                }
-            }
-        }
+        #endregion
     }
 }
