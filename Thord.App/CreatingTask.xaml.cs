@@ -12,36 +12,37 @@ namespace Thord.App
         public CreatingTask(MainViewModel mainViewModel)
         {
             InitializeComponent();
+            DataContext = mainViewModel;
 
-            var drivers = Directory.GetLogicalDrives();
+            //var drivers = Directory.GetLogicalDrives();
 
-            foreach (var driver in drivers)
-            {
-                var item = new TreeViewItem
-                {
-                    Header = driver,
-                    Tag = driver
-                };
+            //foreach (var driver in drivers)
+            //{
+            //    var item = new TreeViewItem
+            //    {
+            //        Header = driver,
+            //        Tag = driver
+            //    };
 
-                item.Items.Add(null);
-                item.Expanded += ItemOnExpanded;
+            //    item.Items.Add(null);
+            //    item.Expanded += ItemOnExpanded;
 
-                SourceFolderTree.Items.Add(item);
-            }
+            //    SourceFolderTree.Items.Add(item);
+            //}
 
-            foreach (var driver in drivers)
-            {
-                var item = new TreeViewItem
-                {
-                    Header = driver,
-                    Tag = driver
-                };
+            //foreach (var driver in drivers)
+            //{
+            //    var item = new TreeViewItem
+            //    {
+            //        Header = driver,
+            //        Tag = driver
+            //    };
 
-                item.Items.Add(null);
-                item.Expanded += ItemOnExpanded;
+            //    item.Items.Add(null);
+            //    item.Expanded += ItemOnExpanded;
 
-                TargetFolderTree.Items.Add(item);
-            }
+            //    TargetFolderTree.Items.Add(item);
+            //}
 
         }
 

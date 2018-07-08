@@ -6,30 +6,39 @@
         xmlns:vm="clr-namespace:Thord.App.ViewModels"
         mc:Ignorable="d"
         Title="Thord - backup application" Width="800" Height="700"
+        xmlns:helpers="clr-namespace:Thord.App.Helpers"
         DataContext="{DynamicResource MainViewModel}">
     <Window.Resources>
         <vm:MainViewModel x:Key="MainViewModel"></vm:MainViewModel>
+        <helpers:SelectedItemToItemSource x:Key="SelectedItemToItemSource"/>
+        <DataTemplate x:Key="UserGrid">
+            <Grid>
+                <CheckBox Content="Nadpisz stare" IsChecked="{Binding OverwriteOldFiles, BindingGroupName=Group1, UpdateSourceTrigger=Explicit}" />
+                <TextBox Text="{Binding SourceDirectory, BindingGroupName=Group1, UpdateSourceTrigger=Explicit}" />
+                <Button Name="AddTaskButton" Command="{Binding DataContext.SaveBackupTaskCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" HorizontalAlignment="Right" Padding="5,1">Add task</Button>
+            </Grid>
+        </DataTemplate>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="25" />
             <RowDefinition Height="5" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid>
             <Grid>
-                <Button Name="AddNewTask" HorizontalAlignment="Left" Padding="5,1" Command="{Binding OpenAddTaskCommand}" Content="Dodaj nowe zadanie" />
+                <Button Name="AddNewTask" HorizontalAlignment="Left" Padding="5,1" Command="{Binding AddBackupTaskCommand}" Content="Dodaj nowe zadanie" />
             </Grid>
         </Grid>
         <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
         <Grid Grid.Row="2">
-            <DataGrid ItemsSource="{Binding BackupTasks}" AutoGenerateColumns="False" SelectedItem="{Binding SelectedBackupTask}">
+            <DataGrid ItemsSource="{Binding BackupTasks}" AutoGenerateColumns="False" SelectedItem="{Binding SelectedBackupTask}" SelectedIndex="{Binding SelectedIndex}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Source Folder" Binding="{Binding SourceDirectory}" />
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <!--<Button Command="{Binding RelativeSource={RelativeSource AncestorType=Expander}, Path=DataContext.StartBackupCommand}">Rozpocznij</Button>-->
                                 <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=DataGrid}, Path=DataContext.StartBackupCommand}">Rozpocznij</Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -37,5 +46,6 @@
                 </DataGrid.Columns>
              </DataGrid>
         </Grid>
+        <ItemsControl Grid.Row="3" BindingGroup="{Binding UpdateBindingGroup, Mode=OneWay}" ItemTemplate="{StaticResource UserGrid}" ItemsSource="{Binding SelectedBackupTask, Converter={StaticResource SelectedItemToItemSource}}" VerticalAlignment="Top" Margin="10,0,0,0"/>
     </Grid>
 </Window>

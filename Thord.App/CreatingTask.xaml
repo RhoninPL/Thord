@@ -3,10 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Thord.App"
+        xmlns:helpers="clr-namespace:Thord.App.Helpers"
         mc:Ignorable="d"
         Title="Creating Backup BackupTask" Height="450" Width="800"
         WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <helpers:SelectedItemToItemSource x:Key="SelectedItemToItemSource"/>
+        <DataTemplate x:Key="UserGrid">
+            <Grid>
+                <CheckBox Content="Nadpisz stare" IsChecked="{Binding OverwriteOldFiles, BindingGroupName=Group1, UpdateSourceTrigger=Explicit}" />
+                <TextBox Text="{Binding TargetDirectory, BindingGroupName=Group1, UpdateSourceTrigger=Explicit}" />
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="25" />
@@ -16,12 +25,16 @@
         </Grid.RowDefinitions>
         <Grid>
             <StackPanel Orientation="Horizontal">
-                <Button Name="AddTaskButton" Click="AddTaskButton_Click" HorizontalAlignment="Right" Padding="5,1" Grid.Column="1">Add task</Button>
+                <Button Name="AddTaskButton" Command="{Binding AddBackupTaskCommand}" CommandParameter="{}" HorizontalAlignment="Right" Padding="5,1">Add task</Button>
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1">
-            <StackPanel Orientation="Horizontal">
-            <CheckBox Content="Nadpisz stare"></CheckBox>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="16*"/>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="375*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3">
                 <CheckBox Content="Usuń brakujące"></CheckBox>
             </StackPanel>
         </Grid>
@@ -48,7 +61,7 @@
                 </TreeView.Resources>
             </TreeView>
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
-            <TreeView Name="TargetFolderTree" Grid.Column="2">
+            <!--<TreeView Name="TargetFolderTree" Grid.Column="2">
                 <TreeView.Resources>
                     <Style TargetType="{x:Type TreeViewItem}">
                         <Setter Property="HeaderTemplate">
@@ -62,7 +75,9 @@
                         </Setter>
                     </Style>
                 </TreeView.Resources>
-            </TreeView>
+            </TreeView>-->
+            <ItemsControl Grid.Column="2" BindingGroup="{Binding UpdateBindingGroup, Mode=OneWay}" ItemTemplate="{StaticResource UserGrid}" ItemsSource="{Binding SelectedPerson, Converter={StaticResource SelectedItemToItemsSource}}" VerticalAlignment="Top" Margin="10,0,0,0"/>
+
         </Grid>
     </Grid>
 </Window>
