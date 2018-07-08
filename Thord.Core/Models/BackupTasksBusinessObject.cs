@@ -14,7 +14,7 @@ namespace Thord.Core.Models
             {
                 new BackupTask { SourceDirectory = "C:\\", TargetDirectory = "D:\\" },
                 new BackupTask { SourceDirectory = "E:\\", TargetDirectory = "D:\\" },
-                new BackupTask { SourceDirectory = "F:\\", TargetDirectory = "D:\\" }
+                new BackupTask { SourceDirectory = "F:\\", TargetDirectory = "D:\\", OverwriteOldFiles = true }
             };
         }
 
@@ -42,8 +42,7 @@ namespace Thord.Core.Models
 
         private void OnBackupTaskChanged()
         {
-            if (BackupTaskChanged != null)
-                BackupTaskChanged(this, null);
+            BackupTaskChanged?.Invoke(this, null);
         }
     }
 }

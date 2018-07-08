@@ -13,9 +13,11 @@
         <helpers:SelectedItemToItemSource x:Key="SelectedItemToItemSource"/>
         <DataTemplate x:Key="UserGrid">
             <Grid>
-                <CheckBox Content="Nadpisz stare" IsChecked="{Binding OverwriteOldFiles, BindingGroupName=Group1, UpdateSourceTrigger=Explicit}" />
-                <TextBox Text="{Binding SourceDirectory, BindingGroupName=Group1, UpdateSourceTrigger=Explicit}" />
-                <Button Name="AddTaskButton" Command="{Binding DataContext.SaveBackupTaskCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" HorizontalAlignment="Right" Padding="5,1">Add task</Button>
+                <StackPanel>
+                    <CheckBox Content="Nadpisz stare" IsChecked="{Binding OverwriteOldFiles, BindingGroupName=Group1, UpdateSourceTrigger=Explicit}" />
+                    <TextBox Text="{Binding SourceDirectory, BindingGroupName=Group1, UpdateSourceTrigger=Explicit}" />
+                    <Button Name="AddTaskButton" Command="{Binding DataContext.SaveBackupTaskCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" HorizontalAlignment="Right" Padding="5,1">Add task</Button>
+                </StackPanel>
             </Grid>
         </DataTemplate>
     </Window.Resources>
@@ -36,6 +38,7 @@
             <DataGrid ItemsSource="{Binding BackupTasks}" AutoGenerateColumns="False" SelectedItem="{Binding SelectedBackupTask}" SelectedIndex="{Binding SelectedIndex}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Source Folder" Binding="{Binding SourceDirectory}" />
+                    <DataGridCheckBoxColumn Header="Overwrite old files" Binding="{Binding OverwriteOldFiles}"/>
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -44,7 +47,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
-             </DataGrid>
+            </DataGrid>
         </Grid>
         <ItemsControl Grid.Row="3" BindingGroup="{Binding UpdateBindingGroup, Mode=OneWay}" ItemTemplate="{StaticResource UserGrid}" ItemsSource="{Binding SelectedBackupTask, Converter={StaticResource SelectedItemToItemSource}}" VerticalAlignment="Top" Margin="10,0,0,0"/>
     </Grid>

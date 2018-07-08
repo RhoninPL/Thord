@@ -17,7 +17,7 @@ namespace Thord.App.ViewModels
         {
             get
             {
-                _backupTasks = new ObservableCollection<BackupTask>(_backupTasksBusinessObject.GetBackupTasks()); _backupTasksBusinessObject.GetBackupTasks();
+                _backupTasks = new ObservableCollection<BackupTask>(_backupTasksBusinessObject.GetBackupTasks());
                 return _backupTasks;
             }
         }
@@ -93,7 +93,7 @@ namespace Thord.App.ViewModels
             if (SelectedIndex == -1)
             {
                 _backupTasksBusinessObject.AddBackupTask(backup);
-                RaisePropertyChanged("BackupTask");
+                RaisePropertyChanged("BackupTasks");
             }
             else
             {
@@ -110,7 +110,7 @@ namespace Thord.App.ViewModels
         {
             Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
             {
-                RaisePropertyChanged("BackupTask");
+                RaisePropertyChanged("BackupTasks");
             }));
         }
 

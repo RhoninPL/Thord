@@ -35,7 +35,17 @@ namespace Thord.Core.Models
         public List<string> FoldersToSkip { get; set; }
         public DateTime Creation { get; set; }
         public DateTime LastRun { get; set; }
-        public bool OverwriteOldFiles { get; set; }
+        private bool _overwriteOldFiles;
+
+        public bool OverwriteOldFiles
+        {
+            get { return _overwriteOldFiles; }
+            set
+            {
+                _overwriteOldFiles = value;
+                OnPropertyChanged("OverwriteOldFiles");
+            }
+        }
 
         #endregion
 
@@ -43,7 +53,10 @@ namespace Thord.Core.Models
 
         protected virtual void OnPropertyChanged(string propertyName)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 }
