@@ -45,16 +45,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\BackupTasksFileHandler.cs" />
-    <Compile Include="Configuration\IBackupTasksFileHandler.cs" />
+    <Compile Include="Interfaces\IBackupTasksFileHandler.cs" />
+    <Compile Include="Interfaces\ILogger.cs" />
     <Compile Include="Models\BackupTask.cs" />
     <Compile Include="Models\BackupTasksBusinessObject.cs" />
     <Compile Include="RelayCommand.cs" />
     <Compile Include="SynchronizeHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interfaces\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

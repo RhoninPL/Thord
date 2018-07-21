@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using Thord.Core.Interfaces;
 
 namespace Thord.Core
 {
-    // TODO : create logger interface
     public class SynchronizeHandler
     {
+        private readonly ILogger _logger;
+
         #region Public Fields
 
         public List<string> FoldersSkip;
@@ -22,13 +25,21 @@ namespace Thord.Core
 
         #endregion
 
+        public SynchronizeHandler(ILogger logger)
+        {
+            _logger = logger;
+        }
+
         #region Public Methods
 
-        public void StartCopy(DirectoryInfo source, DirectoryInfo target)
+        public async Task StartCopy(DirectoryInfo source, DirectoryInfo target)
         {
-            ReadAllFiles(source);
-            Console.Title = $"Files: {_copiedFilesNumber}/{_totalFilesToCopy}, _copiedFilesSize: {_copiedFilesSize}{_totalFilesSize}";
-            CopyAll(source, target);
+            await Task.Run(() =>
+             {
+                 ReadAllFiles(source);
+                 _logger.LogInfo($"Files: {_copiedFilesNumber}/{_totalFilesToCopy}, _copiedFilesSize: {_copiedFilesSize}{_totalFilesSize}");
+                 CopyAll(source, target);
+             }).ConfigureAwait(false);
         }
 
         #endregion
@@ -60,7 +71,7 @@ namespace Thord.Core
             {
                 if (ShowErrors)
                 {
-                    Console.WriteLine($"Can not access to directory {source.Name}.");
+                    _logger.LogWarning($"Can not access to directory {source.Name}.");
                 }
             }
         }
@@ -100,7 +111,7 @@ namespace Thord.Core
                     if (sourceFile != null)
                         continue;
 
-                    Console.WriteLine($"Deleting folder {targetDirectory.Name}");
+                    _logger.LogInfo($"Deleting folder {targetDirectory.Name}");
                     targetDirectory.Delete(true);
                 }
             }
@@ -108,7 +119,7 @@ namespace Thord.Core
             {
                 if (ShowErrors)
                 {
-                    Console.WriteLine($"Can not access to directory {source.Name}.");
+                    _logger.LogInfo($"Can not access to directory {source.Name}.");
                 }
             }
         }
@@ -128,8 +139,8 @@ namespace Thord.Core
                         UpdateTitle(1, sourceFile.Length);
                         continue;
                     }
-                    
-                    Console.WriteLine(@"Copying {0}\{1}", target.FullName, sourceFile.Name);
+
+                    _logger.LogInfo($@"Copying {target.FullName}\{sourceFile.Name}");
                     sourceFile.CopyTo(Path.Combine(target.FullName, sourceFile.Name), true);
                     UpdateTitle(1, sourceFile.Length);
                 }
@@ -140,7 +151,7 @@ namespace Thord.Core
                     if(sourceFile != null)
                         continue;
 
-                    Console.WriteLine($"Deleting file {targetFile.Name}");
+                    _logger.LogInfo($"Deleting file {targetFile.Name}");
                     targetFile.Delete();
                 }
             }
@@ -148,7 +159,7 @@ namespace Thord.Core
             {
                 if (ShowErrors)
                 {
-                    Console.WriteLine($"Can not access to directory {source.Name}.");
+                    _logger.LogWarning($"Can not access to directory {source.Name}.");
                 }
             }
         }
@@ -157,7 +168,7 @@ namespace Thord.Core
         {
             _copiedFilesSize += size;
             var percentage = (float)_copiedFilesSize / _totalFilesSize;
-            Console.Title = $"Copied files: {_copiedFilesNumber += files}/{_totalFilesToCopy}, {(_copiedFilesSize / 1024f) / 1024}/{(_totalFilesSize / 1024f) / 1024} MB. Progress: {percentage:P} ";
+            _logger.LogInfo($"Copied files: {_copiedFilesNumber += files}/{_totalFilesToCopy}, {(_copiedFilesSize / 1024f) / 1024}/{(_totalFilesSize / 1024f) / 1024} MB. Progress: {percentage:P} ");
         }
 
         #endregion

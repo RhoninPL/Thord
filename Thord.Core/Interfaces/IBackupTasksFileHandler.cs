@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Thord.Core.Models;
 
-namespace Thord.Core.Configuration
+namespace Thord.Core.Interfaces
 {
     public interface IBackupTasksFileHandler
     {

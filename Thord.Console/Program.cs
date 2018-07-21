@@ -22,11 +22,12 @@ namespace Thord.Console
             var sourceFolder = new DirectoryInfo(sourceFolderName);
             var targetFolder = new DirectoryInfo(targetFolderName);
 
-            var copyHandler = new SynchronizeHandler
-            {
-                FoldersSkip = new List<string>() { folderToSkip }
-            };
-            copyHandler.StartCopy(sourceFolder, targetFolder);
+            // TODO: implement ILogger class
+            //var copyHandler = new SynchronizeHandler()
+            //{
+            //    FoldersSkip = new List<string>() { folderToSkip }
+            //};
+            //copyHandler.StartCopy(sourceFolder, targetFolder);
 
             System.Console.WriteLine("Synchronize done. Press enter to exit...");
             System.Console.ReadLine();

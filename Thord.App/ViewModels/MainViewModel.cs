@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Threading;
+using Thord.App.Helpers;
 using Thord.Core;
 using Thord.Core.Configuration;
 using Thord.Core.Models;
+using static System.String;
 
 namespace Thord.App.ViewModels
 {
@@ -18,6 +23,7 @@ namespace Thord.App.ViewModels
         private object _selectedBackupTask;
 
         BindingGroup _UpdateBindingGroup;
+        private string _logs;
 
         #endregion
 
@@ -39,6 +45,20 @@ namespace Thord.App.ViewModels
         public RelayCommand AddBackupTaskCommand { get; set; }
 
         public RelayCommand SaveBackupTaskCommand { get; set; }
+
+        public string Logs
+        {
+            get { return _logs; }
+            set
+            {
+                var stringBuilder = new StringBuilder();
+                stringBuilder.Append(value);
+                stringBuilder.AppendLine();
+                stringBuilder.Append(_logs);
+                _logs = stringBuilder.ToString();
+                RaisePropertyChanged("Logs");
+            }
+        }
 
         public int SelectedIndex { get; set; }
 
@@ -99,9 +119,17 @@ namespace Thord.App.ViewModels
 
         #region Public Methods
 
-        public void StartBackup(object parameter)
+        public async void StartBackup(object parameter)
         {
-            MessageBox.Show("Test");
+            var synchronizeHanlder = new SynchronizeHandler(new WpfLogger(LogMessage));
+            var backupTask = SelectedBackupTask as BackupTask;
+            synchronizeHanlder.FoldersSkip = backupTask.FoldersToSkip;
+            synchronizeHanlder.ShowErrors = backupTask.ShowErrors;
+
+            var sourceFolder = new DirectoryInfo(backupTask.SourceDirectory);
+            var targetFolder = new DirectoryInfo(backupTask.TargetDirectory);
+
+            await synchronizeHanlder.StartCopy(sourceFolder, targetFolder);
         }
 
         public void OpenAddTaskWindow(object parameter)
@@ -123,7 +151,7 @@ namespace Thord.App.ViewModels
         {
             UpdateBindingGroup.CommitEdit();
             var backup = SelectedBackupTask as BackupTask;
-            if (SelectedIndex == -1)
+            if (SelectedIndex == -1 || BackupTasks.Count == 0)
             {
                 _backupTasksBusinessObject.AddBackupTask(backup);
                 RaisePropertyChanged("BackupTasks");
@@ -144,6 +172,15 @@ namespace Thord.App.ViewModels
         private void BackupTaskChanged(object sender, EventArgs e)
         {
             Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => { RaisePropertyChanged("BackupTasks"); }));
+        }
+
+        private void LogMessage(string message)
+        {
+            //var stringBuilder = new StringBuilder();
+            //stringBuilder.Append(Logs);
+            //stringBuilder.AppendLine();
+            //stringBuilder.Append(message);
+            Logs = message;
         }
 
         #endregion
