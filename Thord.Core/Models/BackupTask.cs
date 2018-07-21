@@ -8,7 +8,14 @@ namespace Thord.Core.Models
     {
         #region Fields
 
+        private DateTime _creation;
+        private bool _deleteDeletedFiles;
+        private List<string> _foldersToSkip;
+        private int _id;
+        private DateTime _lastRun;
+
         private bool _overwriteOldFiles;
+        private bool _showErrors;
 
         private string _sourceDirectory;
 
@@ -17,6 +24,19 @@ namespace Thord.Core.Models
         #endregion
 
         #region Properties
+
+        public int Id
+        {
+            get
+            {
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                OnPropertyChanged("Id");
+            }
+        }
 
         public string SourceDirectory
         {
@@ -44,15 +64,70 @@ namespace Thord.Core.Models
             }
         }
 
-        public bool ShowErrors { get; set; }
+        public bool ShowErrors
+        {
+            get
+            {
+                return _showErrors;
+            }
+            set
+            {
+                _showErrors = value;
+                OnPropertyChanged("ShowErrors");
+            }
+        }
 
-        public bool DeleteDeletedFiles { get; set; }
+        public bool DeleteDeletedFiles
+        {
+            get
+            {
+                return _deleteDeletedFiles;
+            }
+            set
+            {
+                _deleteDeletedFiles = value;
+                OnPropertyChanged("DeleteDeletedFiles");
+            }
+        }
 
-        public List<string> FoldersToSkip { get; set; }
+        public List<string> FoldersToSkip
+        {
+            get
+            {
+                return _foldersToSkip;
+            }
+            set
+            {
+                _foldersToSkip = value;
+                OnPropertyChanged("FoldersToSkip");
+            }
+        }
 
-        public DateTime Creation { get; set; }
+        public DateTime Creation
+        {
+            get
+            {
+                return _creation;
+            }
+            set
+            {
+                _creation = value;
+                OnPropertyChanged("Creation");
+            }
+        }
 
-        public DateTime LastRun { get; set; }
+        public DateTime LastRun
+        {
+            get
+            {
+                return _lastRun;
+            }
+            set
+            {
+                _lastRun = value;
+                OnPropertyChanged("LastRun");
+            }
+        }
 
         public bool OverwriteOldFiles
         {
@@ -66,7 +141,6 @@ namespace Thord.Core.Models
                 OnPropertyChanged("OverwriteOldFiles");
             }
         }
-        public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
 
@@ -81,5 +155,7 @@ namespace Thord.Core.Models
         }
 
         #endregion
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

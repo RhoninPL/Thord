@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Threading;
 using Thord.Core;
+using Thord.Core.Configuration;
 using Thord.Core.Models;
 
 namespace Thord.App.ViewModels
@@ -113,8 +114,6 @@ namespace Thord.App.ViewModels
 
         public void AddBackupTask(object parameter)
         {
-            //if (parameter is BackupTask backupTask)
-            //BackupTasks.Add(backupTask);
             SelectedBackupTask = null;
             var backup = new BackupTask();
             SelectedBackupTask = backup;

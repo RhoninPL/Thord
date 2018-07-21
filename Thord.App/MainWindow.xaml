@@ -16,6 +16,7 @@
                 <StackPanel>
                     <CheckBox Content="Nadpisz stare" IsChecked="{Binding OverwriteOldFiles, BindingGroupName=Group1, UpdateSourceTrigger=Explicit}" />
                     <TextBox Text="{Binding SourceDirectory, BindingGroupName=Group1, UpdateSourceTrigger=Explicit}" />
+                    <TextBox Text="{Binding TargetDirectory, BindingGroupName=Group1, UpdateSourceTrigger=Explicit}" />
                     <Button Name="AddTaskButton" Command="{Binding DataContext.SaveBackupTaskCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" HorizontalAlignment="Right" Padding="5,1">Add task</Button>
                 </StackPanel>
             </Grid>
@@ -35,9 +36,10 @@
         </Grid>
         <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
         <Grid Grid.Row="2">
-            <DataGrid ItemsSource="{Binding BackupTasks}" AutoGenerateColumns="False" SelectedItem="{Binding SelectedBackupTask}" SelectedIndex="{Binding SelectedIndex}">
+            <DataGrid ItemsSource="{Binding BackupTasks}" CanUserAddRows="False" IsReadOnly="True" CanUserDeleteRows="False" CanUserResizeColumns="True" AutoGenerateColumns="False" SelectedItem="{Binding SelectedBackupTask}" SelectedIndex="{Binding SelectedIndex}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Source Folder" Binding="{Binding SourceDirectory}" />
+                    <DataGridTextColumn Header="Target Folder" Binding="{Binding TargetDirectory}" />
                     <DataGridCheckBoxColumn Header="Overwrite old files" Binding="{Binding OverwriteOldFiles}"/>
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
