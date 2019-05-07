@@ -11,6 +11,7 @@
     <Window.Resources>
         <vm:MainViewModel x:Key="MainViewModel"></vm:MainViewModel>
         <helpers:SelectedItemToItemSource x:Key="SelectedItemToItemSource"/>
+        <helpers:TextToFolderToSkip x:Key="TextToFolderToSkip"/>
         <DataTemplate x:Key="UserGrid">
             <Grid>
                 <StackPanel>
@@ -18,8 +19,10 @@
                     <CheckBox Content="Delete deleted files" IsChecked="{Binding DeleteDeletedFiles, BindingGroupName=Group1, UpdateSourceTrigger=Explicit}" />
                     <CheckBox Content="Show Errors" IsChecked="{Binding ShowErrors, BindingGroupName=Group1, UpdateSourceTrigger=Explicit}" />
                     <TextBox Text="{Binding SourceDirectory, BindingGroupName=Group1, UpdateSourceTrigger=Explicit}" />
+                    <Button Command="{Binding DataContext.SelectSourceDirectoryCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}">Select Source Directory</Button>
                     <TextBox Text="{Binding TargetDirectory, BindingGroupName=Group1, UpdateSourceTrigger=Explicit}" />
                     <Button Name="AddTaskButton" Command="{Binding DataContext.SaveBackupTaskCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" HorizontalAlignment="Right" Padding="5,1">Add task</Button>
+                    <TextBox Text="{Binding FoldersToSkip, Converter={StaticResource TextToFolderToSkip}, BindingGroupName=Group1, UpdateSourceTrigger=Explicit}" />
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -33,9 +36,11 @@
             <RowDefinition Height="125" />
         </Grid.RowDefinitions>
         <Grid>
-            <Grid>
+            <StackPanel Orientation="Horizontal">
                 <Button Name="AddNewTask" HorizontalAlignment="Left" Padding="5,1" Command="{Binding AddBackupTaskCommand}" Content="Add new task" />
-            </Grid>
+                <TextBox IsEnabled="False" Text="{Binding Progress}"></TextBox>            
+                <TextBox IsEnabled="False" Text="{Binding Percentage}"></TextBox>            
+            </StackPanel>
         </Grid>
         <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
         <Grid Grid.Row="2">
@@ -49,7 +54,10 @@
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=DataGrid}, Path=DataContext.StartBackupCommand}">Start backup</Button>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=DataGrid}, Path=DataContext.StartBackupCommand}">Start backup</Button>
+                                    <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=DataGrid}, Path=DataContext.RemoveBackupTaskCommand}">Remove backup</Button>
+                                </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

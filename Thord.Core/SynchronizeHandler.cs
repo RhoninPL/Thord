@@ -3,48 +3,56 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Thord.Core.Extensions;
 using Thord.Core.Interfaces;
 
 namespace Thord.Core
 {
     public class SynchronizeHandler
     {
-        private readonly ILogger _logger;
+        #region Fields
 
-        #region Public Fields
+        private readonly ILogger _logger;
+        private long _totalFilesSize, _copiedFilesSize;
+
+        private int _totalFilesToCopy, _copiedFilesNumber;
 
         public List<string> FoldersSkip;
+        public Action<double> PercentageProgressHanlder;
         public bool ShowErrors;
 
         #endregion
 
-        #region Private Fields
+        #region Properties
 
-        private int _totalFilesToCopy, _copiedFilesNumber;
-        private long _totalFilesSize, _copiedFilesSize;
+        public IProgress<string> ProgressHanlder { get; set; }
 
         #endregion
+
+        #region Constructors
 
         public SynchronizeHandler(ILogger logger)
         {
             _logger = logger;
         }
 
+        #endregion
+
         #region Public Methods
 
         public async Task StartCopy(DirectoryInfo source, DirectoryInfo target)
         {
             await Task.Run(() =>
-             {
-                 ReadAllFiles(source);
-                 _logger.LogInfo($"Files: {_copiedFilesNumber}/{_totalFilesToCopy}, _copiedFilesSize: {_copiedFilesSize}{_totalFilesSize}");
-                 CopyAll(source, target);
-             }).ConfigureAwait(false);
+            {
+                ReadAllFiles(source);
+                _logger.LogInfo($"Files: {_copiedFilesNumber}/{_totalFilesToCopy}, _copiedFilesSize: {_copiedFilesSize}{_totalFilesSize}");
+                CopyAll(source, target);
+            }).ConfigureAwait(false);
         }
 
         #endregion
 
-        #region Private Methods
+        #region  Private Methods
 
         private void ReadAllFiles(DirectoryInfo source)
         {
@@ -55,16 +63,13 @@ namespace Thord.Core
                 _totalFilesSize += files.Select(file => file.Length).Sum();
                 foreach (var subDirectory in source.GetDirectories())
                 {
-                    if (subDirectory.Attributes.HasFlag(FileAttributes.Hidden))
+                    if ((subDirectory.Attributes & FileAttributes.Hidden) != 0)
                         continue;
 
                     if (FoldersSkip?.Contains(subDirectory.FullName) == true)
-                    {
                         continue;
-                    }
 
                     ReadAllFiles(subDirectory);
-
                 }
             }
             catch
@@ -86,7 +91,6 @@ namespace Thord.Core
 
         private void CopySubdir(DirectoryInfo source, DirectoryInfo target)
         {
-
             try
             {
                 var sourceDirecotries = source.GetDirectories();
@@ -98,7 +102,7 @@ namespace Thord.Core
                             continue;
                     }
 
-                    if (sourceDirectory.Attributes.HasFlag(FileAttributes.Hidden))
+                    if ((sourceDirectory.Attributes & FileAttributes.Hidden) != 0)
                         continue;
 
                     var nextTargetSubDir = target.CreateSubdirectory(sourceDirectory.Name);
@@ -141,14 +145,15 @@ namespace Thord.Core
                     }
 
                     _logger.LogInfo($@"Copying {target.FullName}\{sourceFile.Name}");
-                    sourceFile.CopyTo(Path.Combine(target.FullName, sourceFile.Name), true);
+                    //sourceFile.CopyTo(Path.Combine(target.FullName, sourceFile.Name), true);
+                    sourceFile.CopyTo(Path.Combine(target.FullName, sourceFile.Name), percentage => { PercentageProgressHanlder(percentage); });
                     UpdateTitle(1, sourceFile.Length);
                 }
 
                 foreach (var targetFile in targetFiles)
                 {
                     var sourceFile = sourceFiles.FirstOrDefault(sFile => sFile.Name == targetFile.Name);
-                    if(sourceFile != null)
+                    if (sourceFile != null)
                         continue;
 
                     _logger.LogInfo($"Deleting file {targetFile.Name}");
@@ -168,7 +173,9 @@ namespace Thord.Core
         {
             _copiedFilesSize += size;
             var percentage = (float)_copiedFilesSize / _totalFilesSize;
-            _logger.LogInfo($"Copied files: {_copiedFilesNumber += files}/{_totalFilesToCopy}, {(_copiedFilesSize / 1024f) / 1024}/{(_totalFilesSize / 1024f) / 1024} MB. Progress: {percentage:P} ");
+            var quantity = _copiedFilesNumber += files;
+            _logger.LogInfo($"Copied files: {quantity}/{_totalFilesToCopy}, {_copiedFilesSize / 1024f / 1024}/{_totalFilesSize / 1024f / 1024} MB. Progress: {percentage:P} ");
+            ProgressHanlder?.Report($"Copied files: {quantity}/{_totalFilesToCopy}");
         }
 
         #endregion

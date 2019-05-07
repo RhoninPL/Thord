@@ -18,7 +18,6 @@ namespace Thord.Console
             System.Console.Write("Enter folder to skip: ");
             var folderToSkip= System.Console.ReadLine();
 
-
             var sourceFolder = new DirectoryInfo(sourceFolderName);
             var targetFolder = new DirectoryInfo(targetFolderName);
 

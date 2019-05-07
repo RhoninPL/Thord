@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\BackupTasksFileHandler.cs" />
+    <Compile Include="Extensions\FileInfoExtensions.cs" />
     <Compile Include="Interfaces\IBackupTasksFileHandler.cs" />
     <Compile Include="Interfaces\ILogger.cs" />
     <Compile Include="Models\BackupTask.cs" />

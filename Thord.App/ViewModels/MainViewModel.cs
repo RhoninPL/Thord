@@ -2,15 +2,12 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Threading;
 using Thord.App.Helpers;
 using Thord.Core;
-using Thord.Core.Configuration;
 using Thord.Core.Models;
-using static System.String;
 
 namespace Thord.App.ViewModels
 {
@@ -18,16 +15,45 @@ namespace Thord.App.ViewModels
     {
         #region Fields
 
-        private ObservableCollection<BackupTask> _backupTasks;
         private readonly BackupTasksBusinessObject _backupTasksBusinessObject;
+
+        private ObservableCollection<BackupTask> _backupTasks;
+        private string _logs;
+        private string _progress;
         private object _selectedBackupTask;
 
         BindingGroup _UpdateBindingGroup;
-        private string _logs;
+        private double _percentage;
 
         #endregion
 
         #region Properties
+
+        public string Progress
+        {
+            get
+            {
+                return _progress;
+            }
+            set
+            {
+                _progress = value;
+                RaisePropertyChanged("Progress");
+            }
+        }
+
+        public double Percentage
+        {
+            get
+            {
+                return _percentage;
+            }
+            set
+            {
+                _percentage = value;
+                RaisePropertyChanged("Percentage");
+            }
+        }
 
         public ObservableCollection<BackupTask> BackupTasks
         {
@@ -46,9 +72,16 @@ namespace Thord.App.ViewModels
 
         public RelayCommand SaveBackupTaskCommand { get; set; }
 
+        public RelayCommand SelectSourceDirectoryCommand { get; set; }
+
+        public RelayCommand RemoveBackupTaskCommand { get; set; }
+
         public string Logs
         {
-            get { return _logs; }
+            get
+            {
+                return _logs;
+            }
             set
             {
                 var stringBuilder = new StringBuilder();
@@ -111,6 +144,10 @@ namespace Thord.App.ViewModels
             StartBackupCommand = new RelayCommand(StartBackup);
             AddBackupTaskCommand = new RelayCommand(AddBackupTask);
             SaveBackupTaskCommand = new RelayCommand(SaveBackupTask);
+            SelectSourceDirectoryCommand = new RelayCommand(SelectSourceDirectory);
+            RemoveBackupTaskCommand = new RelayCommand(RemoveBackupTask);
+
+            SelectedBackupTask = null;
         }
 
         #endregion
@@ -119,12 +156,34 @@ namespace Thord.App.ViewModels
 
         #region Public Methods
 
+        public void RemoveBackupTask(object parameter)
+        {
+            var backup = SelectedBackupTask as BackupTask;
+            _backupTasksBusinessObject.DeleteBackupTask(backup);
+            RaisePropertyChanged("BackupTasks");
+        }
+
+        public void SelectSourceDirectory(object parameter)
+        {
+            var selectFolder = new CreatingTask
+            {
+                DataContext = new TaskViewModel()
+            };
+            selectFolder.Show();
+        }
+
         public async void StartBackup(object parameter)
         {
+            var progressHandler = new Progress<string>(value =>
+                Progress = value
+            );
+            var progress = progressHandler as IProgress<string>;
             var synchronizeHanlder = new SynchronizeHandler(new WpfLogger(LogMessage));
             var backupTask = SelectedBackupTask as BackupTask;
             synchronizeHanlder.FoldersSkip = backupTask.FoldersToSkip;
             synchronizeHanlder.ShowErrors = backupTask.ShowErrors;
+            synchronizeHanlder.ProgressHanlder = progress;
+            synchronizeHanlder.PercentageProgressHanlder = percentage => { Percentage = percentage; };
 
             var sourceFolder = new DirectoryInfo(backupTask.SourceDirectory);
             var targetFolder = new DirectoryInfo(backupTask.TargetDirectory);
@@ -134,7 +193,7 @@ namespace Thord.App.ViewModels
 
         public void OpenAddTaskWindow(object parameter)
         {
-            new CreatingTask(this)
+            new CreatingTask
             {
                 DataContext = this
             }.Show();
